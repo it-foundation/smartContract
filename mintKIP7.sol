@@ -7,7 +7,7 @@ import "https://github.com/klaytn/klaytn-contracts/blob/master/contracts/KIP/tok
 // actual link of the file from klaytn repo (get reference from the above link its the same repo above)
 
 
-//latest smart contract address is 0x855c1E8326aa9A5B240027df14A7210455322c87
+//deployed smart contract address is 0x855c1E8326aa9A5B240027df14A7210455322c87
 
 contract KIP7Token is KIP7 {
 
