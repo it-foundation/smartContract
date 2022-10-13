@@ -49,8 +49,10 @@ contract NFTMarketplace is ERC1155, Ownable{
     //   name = "marketplaceNFT";
     //   symbol = "MNFT";
     // }
+    ERC20 __contract;
 
- constructor() ERC1155("") {
+ constructor(ERC20 _contract) ERC1155("") {
+     __contract = _contract
         name = "ShopIt";
         symbol = "IT";      
     }
@@ -84,6 +86,26 @@ contract NFTMarketplace is ERC1155, Ownable{
     function getCurrentToken() public view returns (uint256) {
         return _tokenIds.current();
     }
+
+
+
+
+    function onERC1155Received(address, address, uint256, uint256, bytes memory) public virtual returns (bytes4) {
+        return this.onERC1155Received.selector;
+    }
+
+    function onERC1155BatchReceived(address, address, uint256[] memory, uint256[] memory, bytes memory) public virtual returns (bytes4) {
+        return this.onERC1155BatchReceived.selector;
+    }
+
+    
+
+
+
+
+
+
+
 
     //The first time a token is created, it is listed here
     function createToken(string memory _uri, uint256 price, uint256 amount) public payable returns (uint) {
@@ -121,12 +143,12 @@ contract NFTMarketplace is ERC1155, Ownable{
         );    
 
 
-
+        //works
        _setApprovalForAll(msg.sender, address(this), true);
 
 
-
-        safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
+        
+        _safeTransferFrom(msg.sender, address(this), tokenId, amount, "");
         //Emit the event for successful transfer. The frontend parses this message and updates the end user
         emit TokenListedSuccess(
             tokenId,
@@ -156,7 +178,7 @@ contract NFTMarketplace is ERC1155, Ownable{
         return tokens;
     }
     
-    //Returns all the NFTs that the current user is owner or seller in
+    //Returns all the NFTs that the current user is owner or seller i=n
     function getMyNFTs() public view returns (ListedToken[] memory) {
         uint totalItemCount = _tokenIds.current();
         uint itemCount = 0;
@@ -184,8 +206,11 @@ contract NFTMarketplace is ERC1155, Ownable{
     }
 
     function executeSale(uint256 tokenId, uint256 amount) public payable {
-        uint price = idToListedToken[tokenId].price;
-        address seller = idToListedToken[tokenId].seller;
+
+        //_setApprovalForAll(msg.sender, address(this), true);
+
+        // uint price = idToListedToken[tokenId].price;
+        // address seller = idToListedToken[tokenId].seller;
         //require(msg.value == price, "Please submit the asking price in order to complete the purchase");
 
         //update the details of the token
@@ -193,18 +218,17 @@ contract NFTMarketplace is ERC1155, Ownable{
         idToListedToken[tokenId].seller = payable(msg.sender);
         _itemsSold.increment();
 
+        _setApprovalForAll(msg.sender, address(this), true);
+        //setApprovalForAll(address(this), true);
         //Actually transfer the token to the new owner
-        safeTransferFrom(address(this), msg.sender, tokenId, amount, "");
+        this.safeTransferFrom(address(this), msg.sender, tokenId, amount, "");
         //approve the marketplace to sell NFTs on your behalf
-        
-       
-        //Transfer the listing fee to the marketplace creator
-       // payable(owner).transfer(listPrice);
-        //Transfer the proceeds from the sale to the seller of the NFT
-        payable(seller).transfer(price);
+        __contract.transfer(from, to, price)
     }
 
     //We might add a resell token function in the future
     //In that case, tokens won't be listed by default but users can send a request to actually list a token
     //Currently NFTs are listed by default
+
+
 }
