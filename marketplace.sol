@@ -10,8 +10,11 @@ import "./ITToken.sol";
 
 //The structure to store info about a listed token
 struct ListedToken {
+    uint256 tokenId;
+    string uri;
     address payable seller;
     uint256 price;
+    uint256 amount;
     bool isListed;
 }
 
@@ -29,6 +32,7 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
         address owner,
         address seller,
         uint256 price,
+        uint256 amount,
         bool isListed
     );
 
@@ -77,8 +81,11 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
 
 
         listedTokens[tokenId] = ListedToken(
+            tokenId,
+            _uri,
             payable(msg.sender),
             price,
+            amount,
             true
         );
 
@@ -135,13 +142,23 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
 
 
     function buy(uint256 tokenId, uint256 amount) public payable {
-        this.safeTransferFrom(address(this), msg.sender, tokenId, amount, "");
+
         ListedToken memory listedToken = listedTokens[tokenId];
+        require(msg.sender.balance >= listedToken.price);
+
+        this.safeTransferFrom(address(this), msg.sender, tokenId, amount, "");
+        
         _itt.transfer(msg.sender, listedToken.seller, listedToken.price);
         
+
+
+        listedTokens[tokenId].amount = listedTokens[tokenId].amount - amount;
+
         if(balanceOf(address(this), tokenId) == 0) {
             delete listedTokens[tokenId];
         }
+
+
     }
 
 }
