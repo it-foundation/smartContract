@@ -833,7 +833,7 @@ function shop() {
             const signer = provider.getSigner();
             console.log("Account:", await signer.getAddress());
           
-            const Address = "0xD17F282C4675D3491Ba88557EbCf66a00aF88dFD";
+            const Address = "0x0EcC774f0464A607F31aF9752B5A71eD8c2cb1D8";
             const contract = new ethers.Contract(Address, ABI, signer);
             const tx = await contract.mint("ipfs://"+metadata, price, amount);
 
@@ -853,7 +853,7 @@ async function buyItem(){
       const signer = provider.getSigner();
       console.log("Account:", await signer.getAddress());
     
-      const Address = "0xD17F282C4675D3491Ba88557EbCf66a00aF88dFD";
+      const Address = "0x0EcC774f0464A607F31aF9752B5A71eD8c2cb1D8";
       
       const contract = new ethers.Contract(Address, ABI, signer);
    
@@ -876,7 +876,7 @@ async function getAllNFT() {
     const signer = provider.getSigner();
     console.log("Account:", await signer.getAddress());
   
-    const Address = "0xD17F282C4675D3491Ba88557EbCf66a00aF88dFD";
+    const Address = "0x0EcC774f0464A607F31aF9752B5A71eD8c2cb1D8";
     
     const contract = new ethers.Contract(Address, ABI, signer);
     const tx = await contract.getAllNFTs();
@@ -894,7 +894,7 @@ async function getMyNFT() {
     const signer = provider.getSigner();
     console.log("Account:", await signer.getAddress());
   
-    const Address = "0xD17F282C4675D3491Ba88557EbCf66a00aF88dFD";
+    const Address = "0x0EcC774f0464A607F31aF9752B5A71eD8c2cb1D8";
     
     const contract = new ethers.Contract(Address, ABI, signer);
     const tx = await contract.getMyNFTs();
