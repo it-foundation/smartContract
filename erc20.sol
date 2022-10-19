@@ -128,6 +128,7 @@ contract ITToken is ERC20 {
 		"type": "function"
 	},
 	{
+		"constant":true,
 		"inputs": [
 			{
 				"internalType": "address",
@@ -143,6 +144,7 @@ contract ITToken is ERC20 {
 				"type": "uint256"
 			}
 		],
+		"payable" : false,
 		"stateMutability": "view",
 		"type": "function"
 	},
