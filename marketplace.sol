@@ -1,6 +1,10 @@
 //SPDX-License-Identifier: Unlicense
 pragma solidity ^0.8.0;
 
+
+//  marketplace add : 0x3D28dbC18Aca3F7dB71f72102790A3FDAbc2902b
+
+
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/token/ERC1155/ERC1155.sol";
@@ -99,7 +103,7 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
         uint itemCount = 0;
         uint currentIndex = 0;
         uint currentId;
-        //Important to get a count of all the NFTs that belong to the user before we can make an array for them
+        
         for(uint i=0; i < totalItemCount; i++)
         {
             if(listedTokens[i+1].seller == msg.sender){
@@ -107,7 +111,7 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
             }
         }
 
-                //Once you have the count of relevant NFTs, create an array then store all the NFTs in it
+                
         ListedToken[] memory items = new ListedToken[](itemCount);
         for(uint i=0; i < totalItemCount; i++) {
             if(listedTokens[i+1].seller == msg.sender) {
@@ -126,8 +130,7 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
         ListedToken[] memory tokens = new ListedToken[](nftCount);
         uint currentIndex = 0;
         uint currentId;
-        //at the moment currentlyListed is true for all, if it becomes false in the future we will 
-        //filter out currentlyListed == false over here
+        
         for(uint i=0;i<nftCount;i++)
         {
             currentId = i + 1;
@@ -151,14 +154,66 @@ contract NFTMarketplace is ERC1155, Ownable, ERC1155Holder {
         _itt.transfer(msg.sender, listedToken.seller, listedToken.price);
         
 
-
+ 
         listedTokens[tokenId].amount = listedTokens[tokenId].amount - amount;
 
-        if(balanceOf(address(this), tokenId) == 0) {
+        if(listedTokens[tokenId].amount == 0) {
             delete listedTokens[tokenId];
         }
 
 
     }
 
-}
+    function burn (uint256 tokenId, uint256 amount) public {
+
+        _burn(address(this), tokenId, amount);
+
+        delete listedTokens[tokenId];
+    }
+
+
+
+    uint256[] public tokenIds;
+    uint256[] public amounts;
+
+
+    function batchbuy(uint256[] memory _batchtokenIds, uint256[] memory _amountArray) public payable {
+
+
+        //Array of wtv
+        tokenIds = _batchtokenIds;
+        amounts = _amountArray;
+
+        uint256 currentID = 0;
+        uint256 currentAmount = 0;
+
+
+        this.safeBatchTransferFrom(address(this), msg.sender, tokenIds, amounts, "");
+        
+        for(uint i=0;i<tokenIds.length;i++){
+    
+            currentID =  tokenIds[i];
+            currentAmount = amounts[i];
+
+            ListedToken memory listedToken = listedTokens[currentID];
+            
+            _itt.transfer(msg.sender, listedToken.seller, listedToken.price);
+
+            listedTokens[currentID].amount = listedTokens[currentID].amount - currentAmount;
+
+            if(listedTokens[currentID].amount == 0) {
+                delete listedTokens[currentID];
+            }
+
+
+        }
+        
+
+ 
+        
+
+
+    }
+    
+
+}   
